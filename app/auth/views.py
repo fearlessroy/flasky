@@ -1,7 +1,7 @@
 from flask import render_template, redirect, request, url_for, flash
 
 from . import auth
-from flask_login import login_required, login_user
+from flask_login import login_required, login_user, logout_user
 from ..models import User
 from .forms import LoginForm
 
@@ -22,3 +22,13 @@ def login():
 @login_required
 def secret():
     return 'Only authenticated users are allowed'
+
+
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('main.index'))
+
+
