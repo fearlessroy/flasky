@@ -1,4 +1,6 @@
+# -*- coding=utf-8 -*-
 from . import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Role(db.Model):
@@ -6,6 +8,7 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     users = db.relationship('User', backref='role', lazy='dynamic')
+    password_hash = db.Column(db.String(128))
 
     def __repr__(self):
         return '<Role %r>' % self.name
