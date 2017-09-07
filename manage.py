@@ -24,11 +24,17 @@ def test():
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 
-@manager.command
-def init_database():
-    # db.drop_all()
-    db.create_all()
-    db.session.commit()
+# @manager.command
+# def init_database():
+#     # db.drop_all()
+#     db.create_all()
+#     db.session.commit()
+'''
+use:
+python manage.py db init
+python manage.py db migrate -m "initial migration"
+python manage.py db upgrade
+'''
 
 
 if __name__ == '__main__':

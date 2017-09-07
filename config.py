@@ -24,7 +24,7 @@ class DevelopmentConfig(Config):
     MAIL_PORT = 25
     MAIL_USE_TLS = True
     MAIL_USERNAME = 'w739709403@126.com'
-    MAIL_PASSWORD = ''
+    MAIL_PASSWORD = 'wroybond0582'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
