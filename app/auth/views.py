@@ -47,17 +47,20 @@ def register():
         token = user.generate_confirmation_token()
         send_mail(user.email, 'Confirm Your Account ', 'auth/email/confirm', user=user, token=token)
         flash('A confirmed email has been sent to you by email.')
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('main.index'))
     return render_template('auth/register.html', form=form)
 
 
 @auth.route('/confirm/<token>')
 @login_required
 def confirm(token):
+    # current_user.confirmed = True
     if current_user.confirmed:
         return redirect(url_for('main.index'))
-    if current_user.confirm(token):
+    if current_user.confirm(token=token):
+        print '1111111111111111111111'
         flash('You have confirmed your account. Thanks')
+        print '222222222222222222222222222'
     else:
         flash('The confirmation link is invalid or has expired')
     return redirect(url_for('main.index'))
@@ -66,17 +69,16 @@ def confirm(token):
 @auth.route('/confirm')
 @login_required
 def resend_confirmation():
-    token = current_user.generatec_confirmation_token()
-    send_mail(current_user.email, 'Confirm Your Account', 'auth.email.confirm', user=current_user, token=token)
+    token = current_user.generate_confirmation_token()
+    send_mail(current_user.email, 'Confirm Your Account', 'auth/email/confirm', user=current_user, token=token)
     flash('A new confirmation email has been sent you by email')
     return redirect(url_for('main.index'))
 
 
-
 @auth.before_app_request
 def before_request():
-    if current_user.is_authenticated and not current_user.confirmed and request.endpoint[
-                                                                          :5] != 'auth.' and request.endpoint != 'static':
+    if current_user.is_authenticated and not current_user.confirmed and request.endpoint and request.endpoint[
+                                                                                             :5] != 'auth.' and request.endpoint != 'static':
         return redirect(url_for('auth.unconfirmed'))
 
 
@@ -84,4 +86,4 @@ def before_request():
 def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index'))
-    return render_template('auth.unconfirmed.html')
+    return render_template('auth/unconfirmed.html')

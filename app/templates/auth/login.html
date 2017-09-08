@@ -9,7 +9,7 @@
 </div>
 <div class="clo-md-4">
     {% for message in get_flashed_messages() %}
-    {{ message }}
+    {{ message }}<br>
     {% endfor %}
     {{ wtf.quick_form(form) }}
     <br>
