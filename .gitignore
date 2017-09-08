@@ -104,3 +104,4 @@ ENV/
 flask-env/
 *.sqlite
 migrations/
+py27/
