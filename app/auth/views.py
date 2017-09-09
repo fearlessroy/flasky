@@ -3,7 +3,7 @@ from flask import render_template, redirect, request, url_for, flash
 from . import auth
 from flask_login import login_required, login_user, logout_user, current_user
 from ..models import User
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, ChangePasswordForm
 from .. import db
 from ..email import send_mail
 
@@ -58,9 +58,7 @@ def confirm(token):
     if current_user.confirmed:
         return redirect(url_for('main.index'))
     if current_user.confirm(token=token):
-        print '1111111111111111111111'
         flash('You have confirmed your account. Thanks')
-        print '222222222222222222222222222'
     else:
         flash('The confirmation link is invalid or has expired')
     return redirect(url_for('main.index'))
@@ -87,3 +85,18 @@ def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index'))
     return render_template('auth/unconfirmed.html')
+
+
+@auth.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.verity_password(form.old_password.data):
+            current_user.password = form.password.data
+            db.session.add(current_user)
+            flash('Your password has been updated')
+            return redirect(url_for('main.index'))
+        else:
+            flash('Invalid password')
+    return render_template('auth/change_password.html', form=form)
