@@ -110,7 +110,7 @@ def password_reset_request():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            token = user.generate_confirmation_token()
+            token = user.generate_reset_token()
             send_mail(user.email, 'Reset Your Password', 'auth/email/reset_password', user=user, token=token,
                       next=request.args.get('next'))
         flash('An email with instructions to reset your password has been sent to you')
@@ -125,7 +125,7 @@ def password_reset(token):
     form = PasswordResetForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if not user:
+        if user is None:
             return redirect(url_for('main.index'))
         if user.reset_password(token, form.password.data):
             flash('Your password has been updated.')
