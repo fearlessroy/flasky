@@ -66,6 +66,32 @@ class User(UserMixin, db.Model):
     def verity_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def generate_email_change_token(self, new_email, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'change_email': self.id, 'new_email': new_email})
+
+    def change_email(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            print '111111111111'
+            return False
+        if data.get('change_email') != self.id:
+            print '22222222222222'
+            return False
+        print '333333333333333333'
+        new_email = data.get('new_email')
+        if new_email is None:
+            print '4444444444444444'
+            return False
+        if self.query.filter_by(email=new_email).first() is not None:
+            print '5555555555555555'
+            return False
+        self.email = new_email
+        db.session.add(self)
+        return True
+
     def __repr__(self):
         return '<User %r>' % self.username
 
