@@ -75,18 +75,13 @@ class User(UserMixin, db.Model):
         try:
             data = s.loads(token)
         except:
-            print '111111111111'
             return False
         if data.get('change_email') != self.id:
-            print '22222222222222'
             return False
-        print '333333333333333333'
         new_email = data.get('new_email')
         if new_email is None:
-            print '4444444444444444'
             return False
         if self.query.filter_by(email=new_email).first() is not None:
-            print '5555555555555555'
             return False
         self.email = new_email
         db.session.add(self)
