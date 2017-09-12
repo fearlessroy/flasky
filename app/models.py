@@ -7,36 +7,37 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 
 
-class Role(db.Model):
-    __tablename__ = 'roles'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    users = db.relationship('User', backref='role', lazy='dynamic')
-    default = db.Column(db.Boolean, default=False, index=True)
-    permission = db.Column(db.Integer)
-
-    @staticmethod
-    def insert_roles():
-        roles = {'User': (Perssion.FOLLOW | Perssion.COMMENT | Perssion.WRITE_ARTICLES, True),
-                 'Moderator': (
-                     Perssion.FOLLOW | Perssion.COMMENT | Perssion.WRITE_ARTICLES | Perssion.MODEREATE_COMMENT, False),
-                 'Administrator': (0xff, False)}
-        for r in roles:
-            role = Role.query.filter_by(name=r).first()
-            if not role:
-                role = Role(name=r)
-            role.permission = roles[r][0]
-            role.default = roles[r][1]
-            db.session.add(role)
-        db.session.commit()
-
-
 class Permission:
     FOLLOW = 0X01  # 关注其他用户
     COMMENT = 0X02  # 在他人撰写的文章中发表评论
     WRITE_ARTICLES = 0X04  # 写原创文章
     MODEREATE_COMMENT = 0X08  # 查处他人发表的不当言论
     ADMINISTER = 0X80  # 管理网站
+
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    users = db.relationship('User', backref='role', lazy='dynamic')
+    default = db.Column(db.Boolean, default=False, index=True)
+    permissions = db.Column(db.Integer)
+
+    @staticmethod
+    def insert_roles():
+        roles = {'User': (Permission.FOLLOW | Permission.COMMENT | Permission.WRITE_ARTICLES, True),
+                 'Moderator': (
+                     Permission.FOLLOW | Permission.COMMENT | Permission.WRITE_ARTICLES | Permission.MODEREATE_COMMENT,
+                     False),
+                 'Administrator': (0xff, False)}
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if not role:
+                role = Role(name=r)
+            role.permissions = roles[r][0]
+            role.default = roles[r][1]
+            db.session.add(role)
+        db.session.commit()
 
 
 class User(UserMixin, db.Model):
@@ -52,7 +53,7 @@ class User(UserMixin, db.Model):
         super(User, self).__init__(**kwargs)
         if self.role is None:
             if self.email == current_app.config['FLASKY_ADMIN']:
-                self.role = Role.query.filter_by(permission=0xff).first()
+                self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
 
@@ -121,7 +122,7 @@ class User(UserMixin, db.Model):
         return True
 
     def can(self, permissions):
-        return self.role is not None and (self.role.permission & permissions) == permissions
+        return self.role is not None and (self.role.permissions & permissions) == permissions
 
     def __repr__(self):
         return '<User %r>' % self.username

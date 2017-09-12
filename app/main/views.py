@@ -12,7 +12,7 @@ from .. import db, mail
 from ..models import User
 from ..decorators import admin_required, permission_required
 from ..models import Permission
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 
 def send_anync_email(app, msg):
@@ -68,6 +68,6 @@ def for_amdins_only():
 
 @main.route('/moderator')
 @login_required
-@permission_required(Permission.MODEREATE_COMMENT)
+@permission_required(Permission.FOLLOW)
 def for_moderators_only():
     return "For comment moderators"
