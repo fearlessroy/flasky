@@ -1,6 +1,6 @@
 import os
 from app import create_app, db
-from app.models import User, Role
+from app.models import User, Role, Permission
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
@@ -10,7 +10,7 @@ migrate = Migrate(app, db)
 
 
 def make_sehll_context():
-    return dict(app=app, db=db, User=User, Role=Role)
+    return dict(app=app, db=db, User=User, Role=Role, Permission=Permission)
 
 
 manager.add_command("shell", Shell(make_context=make_sehll_context))
@@ -35,7 +35,6 @@ python manage.py db init
 python manage.py db migrate -m "initial migration"
 python manage.py db upgrade
 '''
-
 
 if __name__ == '__main__':
     manager.run()

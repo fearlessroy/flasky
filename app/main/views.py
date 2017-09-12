@@ -10,6 +10,9 @@ from . import main
 from .forms import NameForm
 from .. import db, mail
 from ..models import User
+from ..decorators import admin_required, permission_required
+from ..models import Permission
+from flask_login import login_required
 
 
 def send_anync_email(app, msg):
@@ -54,3 +57,17 @@ def index():
 @main.route('/test', methods=['GET', 'POST'])
 def test():
     return '<h1>Hello World!</h1>'
+
+
+@main.route('/admin')
+@login_required
+@admin_required
+def for_amdins_only():
+    return 'For administrators!'
+
+
+@main.route('/moderator')
+@login_required
+@permission_required(Permission.MODEREATE_COMMENT)
+def for_moderators_only():
+    return "For comment moderators"
