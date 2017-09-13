@@ -12,7 +12,7 @@ class Permission:
     FOLLOW = 0X01  # 关注其他用户
     COMMENT = 0X02  # 在他人撰写的文章中发表评论
     WRITE_ARTICLES = 0X04  # 写原创文章
-    MODEREATE_COMMENT = 0X08  # 查处他人发表的不当言论
+    MODERATE_COMMENT = 0X08  # 查处他人发表的不当言论
     ADMINISTER = 0X80  # 管理网站
 
 
@@ -26,19 +26,27 @@ class Role(db.Model):
 
     @staticmethod
     def insert_roles():
-        roles = {'User': (Permission.FOLLOW | Permission.COMMENT | Permission.WRITE_ARTICLES, True),
+        roles = {'User': (Permission.FOLLOW |
+                          Permission.COMMENT |
+                          Permission.WRITE_ARTICLES, True),
                  'Moderator': (
-                     Permission.FOLLOW | Permission.COMMENT | Permission.WRITE_ARTICLES | Permission.MODEREATE_COMMENT,
-                     False),
-                 'Administrator': (0xff, False)}
+                     Permission.FOLLOW |
+                     Permission.COMMENT |
+                     Permission.WRITE_ARTICLES |
+                     Permission.MODERATE_COMMENT, False),
+                 'Administrator': (0xff, False)
+                 }
         for r in roles:
             role = Role.query.filter_by(name=r).first()
-            if not role:
+            if role is None:
                 role = Role(name=r)
             role.permissions = roles[r][0]
             role.default = roles[r][1]
             db.session.add(role)
         db.session.commit()
+
+    def __repr__(self):
+        return '<Role %r>' % self.name
 
 
 class User(UserMixin, db.Model):
