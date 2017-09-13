@@ -5,6 +5,7 @@ from flask_login import UserMixin, AnonymousUserMixin
 from . import login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
+from datetime import datetime
 
 
 class Permission:
@@ -48,6 +49,11 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
+    name = db.Column(db.String(64))
+    location = db.Column(db.String(64))
+    about_me = db.Column(db.Text())  # String 和 Text 的最大区别是后者不需要指定最大长度
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)  # 注册日期
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)  # 最后访问日期
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -123,6 +129,10 @@ class User(UserMixin, db.Model):
 
     def can(self, permissions):
         return self.role is not None and (self.role.permissions & permissions) == permissions
+
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
     def __repr__(self):
         return '<User %r>' % self.username

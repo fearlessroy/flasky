@@ -2,7 +2,7 @@
 from datetime import datetime
 from threading import Thread
 
-from flask import render_template, session, redirect, url_for, flash
+from flask import render_template, session, redirect, url_for, flash, abort
 from flask_mail import Message
 
 from manage import app
@@ -71,3 +71,11 @@ def for_amdins_only():
 @permission_required(Permission.FOLLOW)
 def for_moderators_only():
     return "For comment moderators"
+
+
+@main.route('/user/<username>')
+def user(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        abort(404)
+    return render_template('user.html', user=user)
