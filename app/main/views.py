@@ -7,11 +7,10 @@ from flask_mail import Message
 
 from manage import app
 from . import main
-from .forms import NameForm, EditProfileForm, EditProfileAdminForm
+from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm
 from .. import db, mail
-from ..models import User, Role
+from ..models import User, Role, Permission, Post
 from ..decorators import admin_required, permission_required
-from ..models import Permission
 from flask_login import login_required, current_user
 
 
@@ -33,24 +32,31 @@ def send_mail(to, subject, template, **kwargs):
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    form = NameForm()
-    if form.validate_on_submit():
+    name_form = NameForm()
+    post_form = PostForm()
+    if name_form.validate_on_submit():
         old_name = session.get('name')
-        if old_name and old_name != form.name.data:
+        if old_name and old_name != name_form.name.data:
             flash('Looks like you have changed your name!')
-        user = User.query.filter_by(username=form.name.data).first()
+        user = User.query.filter_by(username=name_form.name.data).first()
         if not user:
-            user = User(username=form.name.data)
+            user = User(username=name_form.name.data)
             db.session.add(user)
             session['known'] = False
             if app.config['FLASKY_ADMIN']:
                 send_mail(app.config['FLASKY_ADMIN'], 'New User', 'mail/new_user', user=user)
         else:
             session['known'] = True
-        session['name'] = form.name.data
-        form.name.data = ''
+        session['name'] = name_form.name.data
+        name_form.name.data = ''
         return redirect(url_for('main.index'))
-    return render_template('index.html', current_time=datetime.utcnow(), form=form, name=session.get('name'),
+    if current_user.can(Permission.WRITE_ARTICLES) and post_form.validate_on_submit():
+        post = Post(body=post_form.body.data, author=current_user._get_current_object())
+        db.session.add(post)
+        return redirect(url_for('.index'))
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('index.html', current_time=datetime.utcnow(), form=post_form, posts=posts,
+                           name=session.get('name'),
                            known=session.get('known', False))
 
 
