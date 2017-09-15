@@ -1,18 +1,19 @@
 # -*-encoding=utf-8 -*-
-from flask import Flask, render_template
+from flask import Flask
 from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
 from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
-from config import config
-from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_pagedown import PageDown
 
+from config import config
 
 bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
+pagedown = PageDown()
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
@@ -29,6 +30,7 @@ def create_app(config_name):
     moment.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
+    pagedown.init_app(app)
 
     # 附加路由和自定义错误页面
     from .main import main as main_blueprint
