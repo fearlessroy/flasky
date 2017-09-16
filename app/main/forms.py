@@ -1,11 +1,12 @@
 # -*-coding=utf-8 -*-
 
+from flask_pagedown.fields import PageDownField
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField
 from wtforms import ValidationError
 from wtforms.validators import DataRequired, Length, Email, Regexp
+
 from ..models import User, Role
-from flask_pagedown.fields import PageDownField
 
 
 class NameForm(FlaskForm):
