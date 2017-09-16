@@ -13,6 +13,7 @@ class Config:
     FLASKY_ADMIN = '739709403@qq.com'  # admin
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     FLASKY_POSTS_PER_PAGE = 20
+    FLASKY_FOLLOWERS_PER_PAGE = 50
 
     @staticmethod
     def init_app(app):
