@@ -32,7 +32,7 @@ def get_post(id):
     return jsonify(post.to_json)
 
 
-@api.route('/posts/', methods=['posts'])
+@api.route('/posts/', methods=['POST'])
 @permission_required(Permission.WRITE_ARTICLES)
 def new_post():
     post = Post.from_json(request.json)
