@@ -1,0 +1,15 @@
+数据迁移和更新:
+python manage.py db init
+python manage.py db migrate -m "initial migration"
+python manage.py db upgrade
+
+
+用户角色:
+python manage.py shell
+>>> Role.insert_roles()
+>>> Role.query.all()
+
+自动生成用户评论等:
+python manage.py shell
+User.generate_fake(100)
+Post.generate_fake(100)
