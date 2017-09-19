@@ -1,5 +1,6 @@
 from flask import jsonify
 from . import api
+from app.exceptions import ValidationnError
 
 
 # from app.exceptions import ValidationError
@@ -21,3 +22,8 @@ def unauthorized(message):
     response = jsonify({'error': 'unanthorized', 'message': message})
     response.status_code = 401
     return response
+
+
+@api.errorhandler(ValidationnError)
+def validation_error(e):
+    return bad_request(e.args[0])

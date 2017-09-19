@@ -1,3 +1,4 @@
+# -*-coding=utf-8 -*-
 from flask_httpauth import HTTPBasicAuth
 from flask import g, jsonify
 from ..models import User, AnonymousUser
@@ -12,7 +13,7 @@ def verify_password(email_or_token, password):
     if email_or_token == "":
         g.current_user = AnonymousUser()
         return True
-    if password == "":
+    if password == "":  # 如果密码为空,那就假定email_or_token参数提供的是令牌,按照令牌的方式认证
         g.current_user = User.verify_auth_token(email_or_token)
         g.token_used = True
         return g.current_user is not None
