@@ -105,3 +105,5 @@ flask-env/
 *.sqlite
 migrations/
 py27/
+.gitattributes
+.gitignore
