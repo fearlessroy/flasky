@@ -6,12 +6,15 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'stay foolish stay hungry'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'stay foolish stay hungry'  # CSRF, 跨域请求伪造 Flask-WTF需要此字段防止
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
-    FLASKY_MAIL_SENDER = 'w739709403@126.com'
-    FLASKY_ADMIN = '739709403@qq.com'  # admin
-    FLASKY_MODERATE = 'w739709403@gmail.com'  # moderate
+    # FLASKY_MAIL_SENDER = 'w737094@126.com'
+    FLASKY_MAIL_SENDER = os.environ.get('FLASKY_MAIL_SENDER')
+    # FLASKY_ADMIN = '737403@qq.com'  # admin
+    FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
+    # FLASKY_MODERATE = 'w739094@gmail.com'  # moderate
+    FLASKY_MODERATE = os.environ.get('FLASKY_MODERATE')
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     FLASKY_POSTS_PER_PAGE = 20
     FLASKY_FOLLOWERS_PER_PAGE = 50
@@ -32,8 +35,10 @@ class DevelopmentConfig(Config):
     MAIL_SERVER = 'smtp.126.com'
     MAIL_PORT = 25
     MAIL_USE_TLS = True
-    MAIL_USERNAME = 'w739709403@126.com'
-    MAIL_PASSWORD = 'wroybond0582'
+    # MAIL_USERNAME = 'w@126.com'
+    # MAIL_PASSWORD = 'wrxxxxx'
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
     WTF_CSRF_ENABLED = False
@@ -51,29 +56,29 @@ class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 
-    @classmethod
-    def init_app(cls, app):
-        Config.init_app(app)
-
-        # 把错误通过电子邮件发送给管理员
-        import logging
-        from logging.handlers import SMTPHandler
-        credentials = None
-        secure = None
-        if getattr(cls, 'MAIL_USERNAME', None):
-            credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
-            if getattr(cls, 'MAIL_USE_TLS', None):
-                secure = ()
-        mail_handler = SMTPHandler(
-            mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
-            fromaddr=cls.FLASKY_MAIL_SENDER,
-            toaddrs=[cls.FLASKY_ADMIN],
-            subject=cls.FLASKY_MAIL_SUBJECT_PREFIX + 'Application Error',
-            credentials=credentials,
-            secure=secure
-        )
-        mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler)
+    # @classmethod
+    # def init_app(cls, app):
+    #     Config.init_app(app)
+    #
+    #     # 把错误通过电子邮件发送给管理员
+    #     import logging
+    #     from logging.handlers import SMTPHandler
+    #     credentials = None
+    #     secure = None
+    #     if getattr(cls, 'MAIL_USERNAME', None):
+    #         credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
+    #         if getattr(cls, 'MAIL_USE_TLS', None):
+    #             secure = ()
+    #     mail_handler = SMTPHandler(
+    #         mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
+    #         fromaddr=cls.FLASKY_MAIL_SENDER,
+    #         toaddrs=[cls.FLASKY_ADMIN],
+    #         subject=cls.FLASKY_MAIL_SUBJECT_PREFIX + 'Application Error',
+    #         credentials=credentials,
+    #         secure=secure
+    #     )
+    #     mail_handler.setLevel(logging.ERROR)
+    #     app.logger.addHandler(mail_handler)
 
 
 config = {
