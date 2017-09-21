@@ -103,4 +103,3 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(json_response['url'] == url)
         self.assertTrue(json_response['body'] == 'body of the *blog* post')
         self.assertTrue(json_response['body_html'] == '<p>body of the <em>blog</em> post</p>')
-        
