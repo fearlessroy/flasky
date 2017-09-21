@@ -87,4 +87,4 @@ class SeleniumTestCase(unittest.TestCase):
             # 进入用户个人资料页面
             self.client.find_element_by_link_text('Profile').click()
             self.assertTrue('<h1>john</h1>' in self.client.page_source)
-            
+

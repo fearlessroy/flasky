@@ -32,6 +32,8 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
     WTF_CSRF_ENABLED = False
+    SQLALCHEMY_RECORD_QUERIES = True
+    FLASKY_SLOW_DB_QUERY_TIME = 0.5
 
 
 class TestingConfig(Config):
