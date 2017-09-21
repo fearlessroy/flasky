@@ -1,3 +1,4 @@
+# -*-coding=utf-8-*-
 import os
 
 COV = None
@@ -46,17 +47,35 @@ def test(coverage=False):
         COV.erase()
 
 
-# @manager.command
-# def init_database():
-#     # db.drop_all()
-#     db.create_all()
-#     db.session.commit()
 '''
 use:
 python manage.py db init
 python manage.py db migrate -m "initial migration"
 python manage.py db upgrade
 '''
+
+
+@manager.command
+def profile(length=25, profile_dir=None):
+    from werkzeug.contrib.profiler import ProfilerMiddleware
+    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[length], profile_dir=profile_dir)
+    app.run()
+
+
+@manager.command
+def deploy():
+    from flask_migrate import upgrade
+    from app.models import Role, User
+
+    # 把数据库迁移到最新版本
+    upgrade()
+
+    # 创建用户角色
+    Role.insert_roles()
+
+    # 让所有用户都关注此用户
+    User.add_self_follows()
+
 
 if __name__ == '__main__':
     manager.run()
