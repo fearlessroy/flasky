@@ -4,16 +4,20 @@ from threading import Thread
 
 from flask import render_template, session, redirect, url_for, flash, abort, request, current_app, \
     make_response
+from flask_login import login_required, current_user
 from flask_mail import Message
 
 from manage import app
 from . import main
 from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from .. import db, mail
-from ..models import User, Role, Permission, Post, Comment
 from ..decorators import admin_required, permission_required
-from flask_login import login_required, current_user
-from flask_sqlalchemy import get_debug_queries
+from ..models import User, Role, Permission, Post, Comment
+from celery import Celery
+import random
+
+
+# from flask_sqlalchemy import get_debug_queries
 
 
 def send_anync_email(app, msg):
@@ -300,6 +304,7 @@ def server_shutdown():
     shutdown()
     return 'Shutting down ...'
 
+
 # @main.after_app_request
 # def after_quest(response):
 #     for query in get_debug_queries():
@@ -308,3 +313,36 @@ def server_shutdown():
 #                 'Slow query: %s\nParameters: %s\nDuration:%fs\nContext: %s\n'
 #                 % (query.statement, query.parameters, query.duration, query.context))
 #             return response
+
+
+def make_celery(app):
+    celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
+    # celery.conf.update(app.config)
+    TaskBase = celery.Task
+
+    class ContextTask(TaskBase):
+        abstract = True
+
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+
+celery = make_celery(app)
+
+
+@celery.task()
+def add_together(a, b):
+    res = a + b
+    return res
+
+
+@main.route('/test-celery')
+def test_celery():
+    a = random.randint(0, 10)
+    b = random.randint(0, 10)
+    res = add_together.delay(a, b)
+    return 'Create new task {} + {}'.format(a, b)

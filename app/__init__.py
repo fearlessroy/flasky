@@ -6,7 +6,7 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_pagedown import PageDown
-
+from celery import Celery
 from config import config
 
 bootstrap = Bootstrap()
