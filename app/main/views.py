@@ -94,7 +94,7 @@ def for_moderators_only():
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first()
-    if user is None:
+    if not user:
         abort(404)
     # posts = user.posts.order_by(Post.timestamp.desc()).all()
     page = request.args.get('page', 1, type=int)
@@ -299,7 +299,6 @@ def server_shutdown():
         abort(500)
     shutdown()
     return 'Shutting down ...'
-
 
 # @main.after_app_request
 # def after_quest(response):

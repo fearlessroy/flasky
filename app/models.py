@@ -190,7 +190,7 @@ class User(UserMixin, db.Model):
                 self.role == Role.query.filter_by(permissions=0X08).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
-        if self.email is not None and self.avatar_hash is None:
+        if self.email and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
         self.followed.append(Follow(followed=self))
 
@@ -252,7 +252,7 @@ class User(UserMixin, db.Model):
         new_email = data.get('new_email')
         if new_email is None:
             return False
-        if self.query.filter_by(email=new_email).first() is not None:
+        if self.query.filter_by(email=new_email).first():
             return False
         self.email = new_email
         self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
@@ -260,7 +260,7 @@ class User(UserMixin, db.Model):
         return True
 
     def can(self, permissions):
-        return self.role is not None and (self.role.permissions & permissions) == permissions
+        return self.role and (self.role.permissions & permissions) == permissions
 
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
