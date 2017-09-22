@@ -1,5 +1,6 @@
 # -*-coding=utf-8-*-
 import os
+from celery import Celery
 
 COV = None
 if os.environ.get('FLASK_COVERAGE'):

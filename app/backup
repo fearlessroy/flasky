@@ -13,3 +13,6 @@ python manage.py shell
 python manage.py shell
 User.generate_fake(100)
 Post.generate_fake(100)
+
+# 运行celery后台程序
+celery worker -A celery_worker.celery -l INFO

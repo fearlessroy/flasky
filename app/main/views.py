@@ -13,11 +13,10 @@ from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm, Co
 from .. import db, mail
 from ..decorators import admin_required, permission_required
 from ..models import User, Role, Permission, Post, Comment
-from celery import Celery
+from app import celery
 import random
 
-
-# from flask_sqlalchemy import get_debug_queries
+from flask_sqlalchemy import get_debug_queries
 
 
 def send_anync_email(app, msg):
@@ -315,24 +314,7 @@ def server_shutdown():
 #             return response
 
 
-def make_celery(app):
-    celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'],
-                    backend=app.config['CELERY_RESULT_BACKEND'])
-    # celery.conf.update(app.config)
-    TaskBase = celery.Task
 
-    class ContextTask(TaskBase):
-        abstract = True
-
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-
-    celery.Task = ContextTask
-    return celery
-
-
-celery = make_celery(app)
 
 
 @celery.task()
