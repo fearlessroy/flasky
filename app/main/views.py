@@ -316,7 +316,8 @@ def server_shutdown():
 
 
 def make_celery(app):
-    celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
+    celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'],
+                    backend=app.config['CELERY_RESULT_BACKEND'])
     # celery.conf.update(app.config)
     TaskBase = celery.Task
 
@@ -345,4 +346,4 @@ def test_celery():
     a = random.randint(0, 10)
     b = random.randint(0, 10)
     res = add_together.delay(a, b)
-    return 'Create new task {} + {}'.format(a, b)
+    return 'Create new task {} + {} = {}'.format(a, b, res.get())
