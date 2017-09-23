@@ -6,7 +6,7 @@ from ..models import User
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm, PasswordResetForm, PasswordResetRequestForm, \
     ChangeEmailForm
 from .. import db
-from ..email import send_mail
+from ..email import send_mail, send_mail_use_celery
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -164,3 +164,6 @@ def change_email(token):
     else:
         flash('Invalid request.')
     return redirect(url_for('main.index'))
+
+
+

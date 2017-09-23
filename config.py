@@ -9,10 +9,10 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'stay foolish stay hungry'  # CSRF, 跨域请求伪造 Flask-WTF需要此字段防止,生成token也需要
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
-    # FLASKY_MAIL_SENDER = 'w737094@126.com'
+    # FLASKY_MAIL_SENDER = 'w7@xxx.com'
     FLASKY_MAIL_SENDER = os.environ.get('FLASKY_MAIL_SENDER')
-    # FLASKY_ADMIN = '737403@qq.com'  # admin
-    FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
+    FLASKY_ADMIN = '73@xx.com'  # admin
+    # FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
     # FLASKY_MODERATE = 'w739094@gmail.com'  # moderate
     FLASKY_MODERATE = os.environ.get('FLASKY_MODERATE')
     SQLALCHEMY_TRACK_MODIFICATIONS = True
@@ -38,10 +38,10 @@ class DevelopmentConfig(Config):
     MAIL_SERVER = 'smtp.126.com'
     MAIL_PORT = 25
     MAIL_USE_TLS = True
-    # MAIL_USERNAME = 'w@126.com'
-    # MAIL_PASSWORD = 'wrxxxxx'
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    # MAIL_USERNAME = 'w7@xxx.com'
+    # MAIL_PASSWORD = 'password'
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')  # 与上面的FLASKY_MAIL_SENDER统一
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')  # flask_mail._Mail
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
     WTF_CSRF_ENABLED = False

@@ -15,7 +15,7 @@ from ..decorators import admin_required, permission_required
 from ..models import User, Role, Permission, Post, Comment
 from app import celery
 import random
-
+from ..email import send_mail_use_celery
 from flask_sqlalchemy import get_debug_queries
 
 
@@ -329,3 +329,10 @@ def test_celery():
     b = random.randint(0, 10)
     res = add_together.delay(a, b)
     return 'Create new task {} + {} = {}'.format(a, b, res.get())
+
+
+@main.route('/test-email')
+def test_email_use_celery():
+    send_mail_use_celery('739709403@qq.com', 'Confirm your new email address', 'auth/email/change_email',
+                         user='test-user')
+    return "hello word"
